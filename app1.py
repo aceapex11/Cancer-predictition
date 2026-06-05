@@ -210,7 +210,7 @@ hr { border-color: #1C2A38 !important; }
 DARK_BG    = "#080C10"
 CARD_BG    = "#0C1520"
 GRID_COLOR = "#1C2A38"
-TEXT_COLOR = "#C8D4E0"
+TEXT_COLOR = "#ff69b4"
 CYAN       = "#00D4FF"
 GREEN      = "#4ADB6A"
 RED        = "#FF5555"

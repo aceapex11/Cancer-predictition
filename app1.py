@@ -648,8 +648,7 @@ with st.sidebar:
 # ═══════════════════════════════════════════════════════════════════════════════
 if page == "🩺  Predict":
     st.markdown("<h2 style='margin-bottom:0.25rem;'>Patient survival prediction</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#4A6278;font-size:13px;margin-bottom:1.5rem;'>Select a model, enter clinical data, run prediction.</p>", unsafe_allow_html=True)
-
+    st.markdown("<p style='color:#BFD3E6;font-size:15px;margin-bottom:1.5rem;'>Select a model, enter clinical data, run prediction.</p>",unsafe_allow_html=True)
     top_col1, top_col2 = st.columns([2, 1])
     with top_col1:
         model_name = st.selectbox("Model", MODEL_NAMES)

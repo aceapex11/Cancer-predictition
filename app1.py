@@ -223,9 +223,8 @@ PLOTLY_LAYOUT = dict(
     plot_bgcolor=CARD_BG,
     font=dict(family="Syne, sans-serif", color=TEXT_COLOR, size=12),
     margin=dict(t=40, b=40, l=50, r=20),
-    xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, color=TEXT_COLOR),
-    yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, color=TEXT_COLOR),
 )
+AXIS_STYLE = dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, color=TEXT_COLOR)
 
 MODEL_COLORS = {
     "Logistic Regression": CYAN,
@@ -325,7 +324,7 @@ def chart_proba_bars(results):
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Alive vs Dead probability — all models", font=dict(size=14, color=TEXT_COLOR)),
         barmode="group", height=360,
-        yaxis=dict(**PLOTLY_LAYOUT["yaxis"], range=[0,120], title="Probability (%)"),
+        yaxis=dict(**AXIS_STYLE, range=[0,120], title="Probability (%)"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
     return fig
 
@@ -345,8 +344,8 @@ def chart_alive_gauge_dots(results):
                   annotation_position="top right")
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Alive probability per model", font=dict(size=14, color=TEXT_COLOR)),
-        height=320, xaxis=dict(**PLOTLY_LAYOUT["xaxis"], range=[0,110], title="Alive probability (%)"),
-        yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title=""))
+        height=320, xaxis=dict(**AXIS_STYLE, range=[0,110], title="Alive probability (%)"),
+        yaxis=dict(**AXIS_STYLE, title=""))
     return fig
 
 def chart_radar(results):
@@ -391,8 +390,8 @@ def chart_violin_survival(patient_sm):
                   annotation_font_color=CYAN, annotation_position="top right")
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Survival months distribution — Alive vs Dead", font=dict(size=14, color=TEXT_COLOR)),
-        height=360, yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Survival months"),
-        xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title=""),
+        height=360, yaxis=dict(**AXIS_STYLE, title="Survival months"),
+        xaxis=dict(**AXIS_STYLE, title=""),
         violingap=0.3, violinmode="overlay")
     return fig
 
@@ -410,8 +409,8 @@ def chart_violin_tumor(patient_ts):
                   annotation_font_color=AMBER, annotation_position="top right")
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Tumor size distribution — Alive vs Dead", font=dict(size=14, color=TEXT_COLOR)),
-        height=360, yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Tumor size (mm)"),
-        xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title=""),
+        height=360, yaxis=dict(**AXIS_STYLE, title="Tumor size (mm)"),
+        xaxis=dict(**AXIS_STYLE, title=""),
         violingap=0.3, violinmode="overlay")
     return fig
 
@@ -434,8 +433,8 @@ def chart_nodes_scatter(patient_rn, patient_ts):
     ))
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Regional nodes vs tumor size — patient position", font=dict(size=14, color=TEXT_COLOR)),
-        height=360, xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title="Regional nodes positive"),
-        yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Tumor size (mm)"),
+        height=360, xaxis=dict(**AXIS_STYLE, title="Regional nodes positive"),
+        yaxis=dict(**AXIS_STYLE, title="Tumor size (mm)"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
     return fig
 
@@ -455,7 +454,7 @@ def chart_risk_heatmap(results):
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Probability heatmap across all models", font=dict(size=14, color=TEXT_COLOR)),
         height=220, margin=dict(t=50, b=60, l=80, r=20),
-        xaxis=dict(**PLOTLY_LAYOUT["xaxis"], tickangle=-30))
+        xaxis=dict(**AXIS_STYLE, tickangle=-30))
     return fig
 
 def chart_consensus_donut(alive_count, dead_count):
@@ -491,8 +490,8 @@ def chart_survival_months_hist(patient_sm):
                   annotation_position="top right")
     fig.update_layout(**PLOTLY_LAYOUT, barmode="overlay",
         title=dict(text="Survival months histogram", font=dict(size=14, color=TEXT_COLOR)),
-        height=300, xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title="Months"),
-        yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Count"),
+        height=300, xaxis=dict(**AXIS_STYLE, title="Months"),
+        yaxis=dict(**AXIS_STYLE, title="Count"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
     return fig
 
@@ -507,7 +506,7 @@ def chart_node_violin():
         ))
     fig.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Regional nodes positive — Alive vs Dead", font=dict(size=14, color=TEXT_COLOR)),
-        height=320, yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Nodes positive"),
+        height=320, yaxis=dict(**AXIS_STYLE, title="Nodes positive"),
         violingap=0.3, violinmode="overlay",
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
     return fig
@@ -530,7 +529,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    page = st.radio("", ["🩺  Predict", "📊  Compare Models", "📈  Data Explorer"],
+    page = st.radio("Navigation", ["🩺  Predict", "📊  Compare Models", "📈  Data Explorer"],
                     label_visibility="collapsed")
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -598,8 +597,8 @@ if page == "🩺  Predict":
                 fig.update_layout(**PLOTLY_LAYOUT,
                     height=280, showlegend=False,
                     title=dict(text="Prediction confidence", font=dict(size=13, color=TEXT_COLOR)),
-                    yaxis=dict(**PLOTLY_LAYOUT["yaxis"], range=[0,120], showticklabels=False, showgrid=False),
-                    xaxis=dict(**PLOTLY_LAYOUT["xaxis"], showgrid=False),
+                    yaxis=dict(**AXIS_STYLE, range=[0,120], showticklabels=False, showgrid=False),
+                    xaxis=dict(**AXIS_STYLE, showgrid=False),
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -757,7 +756,7 @@ elif page == "📈  Data Explorer":
             ))
         fig.update_layout(**PLOTLY_LAYOUT,
             title=dict(text="Age distribution — Alive vs Dead", font=dict(size=14, color=TEXT_COLOR)),
-            height=320, yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Age (years)"),
+            height=320, yaxis=dict(**AXIS_STYLE, title="Age (years)"),
             violingap=0.3, violinmode="overlay",
             legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
         st.plotly_chart(fig, use_container_width=True)
@@ -775,8 +774,8 @@ elif page == "📈  Data Explorer":
                                        marker_color=color, opacity=0.6))
         fig.update_layout(**PLOTLY_LAYOUT, barmode="overlay",
             title=dict(text="Regional nodes histogram", font=dict(size=14, color=TEXT_COLOR)),
-            height=300, xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title="Nodes"),
-            yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Count"),
+            height=300, xaxis=dict(**AXIS_STYLE, title="Nodes"),
+            yaxis=dict(**AXIS_STYLE, title="Count"),
             legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
         st.plotly_chart(fig, use_container_width=True)
 
@@ -791,8 +790,7 @@ elif page == "📈  Data Explorer":
         ))
     fig_sc.update_layout(**PLOTLY_LAYOUT,
         title=dict(text="Regional nodes vs tumor size", font=dict(size=14, color=TEXT_COLOR)),
-        height=380, xaxis=dict(**PLOTLY_LAYOUT["xaxis"], title="Regional nodes"),
-        yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Tumor size (mm)"),
+        height=380, xaxis=dict(**AXIS_STYLE, title="Regional nodes"),
+        yaxis=dict(**AXIS_STYLE, title="Tumor size (mm)"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR)))
     st.plotly_chart(fig_sc, use_container_width=True)
-

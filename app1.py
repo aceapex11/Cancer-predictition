@@ -557,10 +557,15 @@ def chart_risk_heatmap(results):
         texttemplate="%{text}", textfont=dict(size=11, color="white"),
         showscale=False,
     ))
-    fig.update_layout(**PLOTLY_LAYOUT,
-        title=dict(text="Probability heatmap across all models", font=dict(size=14, color=TEXT_COLOR)),
-        height=220, margin=dict(t=50, b=60, l=80, r=20),
-        xaxis=dict(**AXIS_STYLE, tickangle=-30))
+    fig.update_layout(
+    **PLOTLY_LAYOUT,
+    title=dict(
+        text="Probability heatmap across all models",
+        font=dict(size=14, color=TEXT_COLOR)
+    ),
+    height=220,
+    xaxis=dict(**AXIS_STYLE, tickangle=-30)
+    )
     return fig
 
 def chart_consensus_donut(alive_count, dead_count):

@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 
 # ── PAGE CONFIG ────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="OncoPulse · Survival Intelligence",
+    page_title="Cancer · Survival Intelligence",
     page_icon="🧬",
     layout="wide",
     initial_sidebar_state="expanded",

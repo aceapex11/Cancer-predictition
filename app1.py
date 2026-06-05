@@ -774,84 +774,85 @@ if page == "🩺  Predict":
             st.plotly_chart(chart_violin_tumor(tumor_size), use_container_width=True)
 
         st.plotly_chart(chart_nodes_scatter(regional_nodes, tumor_size), use_container_width=True)
-# ──────────────────────────────────────────────
-# ALL MODEL PREDICTIONS
-# ──────────────────────────────────────────────
+        # ──────────────────────────────────────────────
+        # ALL MODEL PREDICTIONS
+        # ──────────────────────────────────────────────
+        
+        st.markdown(
+            '<div class="section-sep">All Model Predictions</div>',
+            unsafe_allow_html=True
+        )
+        
+        alive_count = sum(
+            1 for r in all_results
+            if r["prediction"] == "Alive"
+        )
+        
+        dead_count = len(all_results) - alive_count
+        
+        c1, c2 = st.columns([1,2])
+        
+        with c1:
+            st.plotly_chart(
+                chart_consensus_donut(
+                    alive_count,
+                    dead_count
+                ),
+                use_container_width=True
+            )
+        
+        with c2:
+            st.plotly_chart(
+                chart_alive_gauge_dots(
+                    all_results
+                ),
+                use_container_width=True
+            )
+        
+        st.markdown(
+            '<div class="section-sep">Model-by-model predictions</div>',
+            unsafe_allow_html=True
+        )
+        
+        st.plotly_chart(
+            chart_model_status_table(
+                all_results
+            ),
+            use_container_width=True
+        )
+        
+        tab1, tab2, tab3 = st.tabs(
+            [
+                "Probability Comparison",
+                "Radar",
+                "Heatmap"
+            ]
+        )
+        
+        with tab1:
+            st.plotly_chart(
+                chart_proba_bars(
+                    all_results
+                ),
+                use_container_width=True
+            )
+        
+        with tab2:
+            st.plotly_chart(
+                chart_radar(
+                    all_results
+                ),
+                use_container_width=True
+            )
+        
+        with tab3:
+            st.plotly_chart(
+                chart_risk_heatmap(
+                    all_results
+                ),
+                use_container_width=True
+            )
 
-st.markdown(
-    '<div class="section-sep">All Model Predictions</div>',
-    unsafe_allow_html=True
-)
-
-alive_count = sum(
-    1 for r in all_results
-    if r["prediction"] == "Alive"
-)
-
-dead_count = len(all_results) - alive_count
-
-c1, c2 = st.columns([1,2])
-
-with c1:
-    st.plotly_chart(
-        chart_consensus_donut(
-            alive_count,
-            dead_count
-        ),
-        use_container_width=True
-    )
-
-with c2:
-    st.plotly_chart(
-        chart_alive_gauge_dots(
-            all_results
-        ),
-        use_container_width=True
-    )
-
-st.markdown(
-    '<div class="section-sep">Model-by-model predictions</div>',
-    unsafe_allow_html=True
-)
-
-st.plotly_chart(
-    chart_model_status_table(
-        all_results
-    ),
-    use_container_width=True
-)
-
-tab1, tab2, tab3 = st.tabs(
-    [
-        "Probability Comparison",
-        "Radar",
-        "Heatmap"
-    ]
-)
-
-with tab1:
-    st.plotly_chart(
-        chart_proba_bars(
-            all_results
-        ),
-        use_container_width=True
-    )
-
-with tab2:
-    st.plotly_chart(
-        chart_radar(
-            all_results
-        ),
-        use_container_width=True
-    )
-
-with tab3:
-    st.plotly_chart(
-        chart_risk_heatmap(
-            all_results
-        ),
-        use_container_width=True
-    )
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAGE 2 — COMPARE ALL MODELS
 # ═══════════════════════════════════════════════════════════════════════════════

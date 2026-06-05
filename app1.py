@@ -121,7 +121,7 @@ h1, h2, h3, h4 { font-family: 'Syne', sans-serif !important; color: #E8F0F8 !imp
     padding: 1rem 1.25rem !important;
 }
 [data-testid="stMetricValue"] { color: #E8F0F8 !important; font-family: 'Syne', sans-serif !important; }
-[data-testid="stMetricLabel"] { color: #4A6278 !important; font-size: 11px !important; }
+[data-testid="stMetricLabel"] {color: #DDEAF7 !important;font-size: 14px !important;font-weight: 700 !important; }
 
 /* ── divider ── */
 hr { border-color: #1C2A38 !important; }

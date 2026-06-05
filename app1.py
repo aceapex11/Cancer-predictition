@@ -237,6 +237,112 @@ MODEL_COLORS = {
     "XGBoost":             "#E84393",
 }
 
+
+def chart_model_status_table(results):
+    models  = [r["model"]      for r in results]
+    preds   = [r["prediction"] for r in results]
+    alive_p = [r["alive_pct"]  for r in results]
+    dead_p  = [r["dead_pct"]   for r in results]
+
+    pred_colors  = ["#4ADB6A" if p == "Alive" else "#FF5555" for p in preds]
+    row_bg_even  = ["#0C1520"] * len(models)
+    row_bg_odd   = ["#0A1218"] * len(models)
+    row_bgs      = [row_bg_odd[i] if i % 2 == 0 else row_bg_even[i] for i in range(len(models))]
+
+    alive_bars = []
+    dead_bars  = []
+    for ap, dp in zip(alive_p, dead_p):
+        if ap is not None:
+            alive_bar = (
+                f"<span style=\'display:inline-block;width:{ap}%;max-width:100%;"
+                f"background:#4ADB6A;height:8px;border-radius:4px;\'></span> {ap}%"
+            )
+            dead_bar = (
+                f"<span style=\'display:inline-block;width:{dp}%;max-width:100%;"
+                f"background:#FF5555;height:8px;border-radius:4px;\'></span> {dp}%"
+            )
+        else:
+            alive_bar = "N/A"
+            dead_bar  = "N/A"
+        alive_bars.append(alive_bar)
+        dead_bars.append(dead_bar)
+
+    mc = [MODEL_COLORS.get(m, "#888") for m in models]
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        column_widths=[0.48, 0.52],
+        specs=[[{"type": "table"}, {"type": "bar"}]],
+        horizontal_spacing=0.04,
+    )
+
+    fig.add_trace(go.Table(
+        header=dict(
+            values=["<b>Model</b>", "<b>Status</b>", "<b>Alive %</b>", "<b>Dead %</b>"],
+            fill_color="#0A1830",
+            font=dict(color=["#C8D4E0"]*4, size=11, family="Syne, sans-serif"),
+            align=["left","center","center","center"],
+            line_color="#1C2A38",
+            height=36,
+        ),
+        cells=dict(
+            values=[
+                [f"<b>{m}</b>" for m in models],
+                preds,
+                [f"{v}%" if v is not None else "N/A" for v in alive_p],
+                [f"{v}%" if v is not None else "N/A" for v in dead_p],
+            ],
+            fill_color=[
+                ["#0C1520"]*len(models),
+                [("rgba(16,60,20,0.6)" if p=="Alive" else "rgba(60,16,16,0.6)") for p in preds],
+                ["#0C1520"]*len(models),
+                ["#0C1520"]*len(models),
+            ],
+            font=dict(
+                color=[mc, pred_colors, ["#4ADB6A"]*len(models), ["#FF5555"]*len(models)],
+                size=12,
+                family="Syne, sans-serif",
+            ),
+            align=["left","center","center","center"],
+            line_color="#1C2A38",
+            height=34,
+        ),
+    ), row=1, col=1)
+
+    alive_vals = [v if v is not None else 0 for v in alive_p]
+    dead_vals  = [v if v is not None else 0 for v in dead_p]
+
+    fig.add_trace(go.Bar(
+        name="Alive %", x=models, y=alive_vals,
+        marker=dict(color=["#4ADB6A"]*len(models), opacity=0.85),
+        text=[f"{v}%" if v else "N/A" for v in alive_p],
+        textposition="outside", textfont=dict(size=10, color="#4ADB6A"),
+    ), row=1, col=2)
+
+    fig.add_trace(go.Bar(
+        name="Dead %", x=models, y=dead_vals,
+        marker=dict(color=["#FF5555"]*len(models), opacity=0.75),
+        text=[f"{v}%" if v else "N/A" for v in dead_p],
+        textposition="outside", textfont=dict(size=10, color="#FF5555"),
+    ), row=1, col=2)
+
+    fig.update_layout(
+        paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG,
+        font=dict(family="Syne, sans-serif", color=TEXT_COLOR, size=12),
+        height=420,
+        margin=dict(t=50, b=60, l=10, r=20),
+        barmode="group",
+        title=dict(text="All models — status & probability breakdown",
+                   font=dict(size=14, color=TEXT_COLOR)),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_COLOR),
+                    orientation="h", x=0.55, y=1.08),
+        xaxis2=dict(gridcolor=GRID_COLOR, color=TEXT_COLOR, tickangle=-30,
+                    tickfont=dict(size=9)),
+        yaxis2=dict(gridcolor=GRID_COLOR, color=TEXT_COLOR, range=[0, 120],
+                    title="Probability (%)"),
+    )
+    return fig
+
 # ── LOAD MODEL ─────────────────────────────────────────────────────────────────
 @st.cache_resource
 def load_bundle():
@@ -582,7 +688,7 @@ if page == "🩺  Predict":
         if ap is None:
             st.info("SVM was trained with probability=False — only the class prediction is available.")
 
-        r1, r2 = st.columns(2)
+        r1, r2, r3 = st.columns(3)
         with r1:
             # Probability bar
             if ap is not None:
@@ -595,7 +701,7 @@ if page == "🩺  Predict":
                     width=0.45,
                 ))
                 fig.update_layout(**PLOTLY_LAYOUT,
-                    height=280, showlegend=False,
+                    height=300, showlegend=False,
                     title=dict(text="Prediction confidence", font=dict(size=13, color=TEXT_COLOR)),
                     yaxis=dict(**AXIS_STYLE, range=[0,120], showticklabels=False, showgrid=False),
                     xaxis=dict(**AXIS_STYLE, showgrid=False),
@@ -603,6 +709,50 @@ if page == "🩺  Predict":
                 st.plotly_chart(fig, use_container_width=True)
 
         with r2:
+            # Pie chart — alive vs dead for selected model
+            if ap is not None:
+                model_color = MODEL_COLORS.get(model_name, CYAN)
+                pie_fig = go.Figure(go.Pie(
+                    values=[ap, dp],
+                    labels=["Alive", "Dead"],
+                    hole=0.55,
+                    marker=dict(
+                        colors=[GREEN, RED],
+                        line=dict(color=CARD_BG, width=3),
+                    ),
+                    textinfo="label+percent",
+                    textfont=dict(size=12, color=TEXT_COLOR, family="Syne, sans-serif"),
+                    direction="clockwise",
+                    pull=[0.05 if pred == 0 else 0, 0.05 if pred == 1 else 0],
+                ))
+                pie_fig.update_layout(
+                    paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG,
+                    font=dict(family="Syne, sans-serif", color=TEXT_COLOR),
+                    height=300,
+                    margin=dict(t=50, b=20, l=20, r=20),
+                    showlegend=False,
+                    title=dict(
+                        text=f"{model_name} — survival split",
+                        font=dict(size=13, color=TEXT_COLOR),
+                    ),
+                    annotations=[dict(
+                        text=f"{'ALIVE' if pred==0 else 'DEAD'}",
+                        x=0.5, y=0.5,
+                        font=dict(size=15, color=GREEN if pred==0 else RED,
+                                  family="Syne, sans-serif"),
+                        showarrow=False,
+                    )],
+                )
+                st.plotly_chart(pie_fig, use_container_width=True)
+            else:
+                st.markdown(
+                    "<div style='height:300px;display:flex;align-items:center;justify-content:center;"
+                    "color:#4A6278;font-size:13px;border:1px solid #1C2A38;border-radius:10px;'>"
+                    "Pie chart unavailable — SVM has no probability output</div>",
+                    unsafe_allow_html=True
+                )
+
+        with r3:
             # Patient summary
             st.markdown('<div class="onco-label" style="margin-top:0.5rem;">Patient record</div>', unsafe_allow_html=True)
             rows = [("Model", model_name), ("Survival months", survival_months),
@@ -711,7 +861,9 @@ elif page == "📊  Compare Models":
 
         st.markdown('<div class="section-sep">Charts</div>', unsafe_allow_html=True)
 
-        tab1, tab2, tab3 = st.tabs(["Bar comparison", "Radar", "Heatmap"])
+        tab0, tab1, tab2, tab3 = st.tabs(["Status table", "Bar comparison", "Radar", "Heatmap"])
+        with tab0:
+            st.plotly_chart(chart_model_status_table(results), use_container_width=True)
         with tab1:
             st.plotly_chart(chart_proba_bars(results), use_container_width=True)
         with tab2:

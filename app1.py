@@ -86,11 +86,11 @@ h1, h2, h3, h4 { font-family: 'Syne', sans-serif !important; color: #E8F0F8 !imp
 [data-testid="stNumberInput"] label,
 [data-testid="stSelectbox"] label,
 [data-testid="stRadio"] > label {
-    color: #4A6278 !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
+color: #EAF4FF !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
+    letter-spacing: 0.10em !important;
     font-family: 'Syne', sans-serif !important;
 }
 
